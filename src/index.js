@@ -5,26 +5,27 @@ const path = require("path");
 const express = require('express');
 const cors = require('cors');
 
-// Database 
-const ProductsRouter = require("./http/routes/ProductsRouter");
-const UserRouter = require("./http/routes/UserRouter");
+const { Router } = express;
+
+//BOOSTRAP
+const bootstrap = require("./database/setup");
+ 
+//http
+const products = require("./http/routes/ProductsRouter");
+const users = require("./http/routes/UserRouter");
 
 // Express
 const port = 8080;
 const app = express();
 
-// Configuramos la api para que pueda recibir data por POST en formato JSON
-app.use(express.json());
+const api = Router();
+
 app.use(cors());
+app.use(express.json());
 
-//BOOSTRAP
-const bootstrap = require("./database/setup");
-
-// Rutas de la API
-
-ProductsRouter(app);
-UserRouter(app);
-
+app.use("/api/v1", api);
+api.use("/auth", users);
+api.use("/products", products);
 
 bootstrap(() => {
     app.listen(port, () => {

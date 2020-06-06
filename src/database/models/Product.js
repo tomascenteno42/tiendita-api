@@ -1,8 +1,31 @@
-const { Model } = require('objection');
+const BaseModel = require("./BaseModel");
 
-class Product extends Model {
+const User = require("./User");
+
+class Product extends BaseModel {
     static get tableName() {
         return "products";
+    }
+
+    static get relationMappings() {
+
+        const User = require("./User");
+
+        return {
+            users: {
+                relation: BaseModel.ManyToManyRelation,
+                modelClass: User,
+                join: {
+                    from: "product.id",
+                    through: {
+                        from: "user_product.product_id",
+                        to: "user_product.user_id",
+                        extra: ["quantity"]
+                    },
+                    to: "user.id"
+                }
+            }
+        }
     }
 }
 

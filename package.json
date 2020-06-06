@@ -18,6 +18,7 @@
     "jsonwebtoken": "^8.5.1",
     "knex": "^0.20.15",
     "mysql": "^2.18.1",
-    "objection": "^2.1.5"
+    "objection": "^2.1.5",
+    "objection-db-errors": "^1.1.2"
   }
 }
