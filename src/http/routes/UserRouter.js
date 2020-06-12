@@ -7,8 +7,6 @@ const { Router } = express;
 
 const users = Router();
 
-const { UniqueViolationError } = require('objection-db-errors');
-
 const User = require("../../database/models/User");
 const Product = require("../../database/models/Product");
 
@@ -89,7 +87,7 @@ users.get("/:id/cart", async (req, res) => {
 
 users.post("/:id/cart", async (req, res) => {
     const { id, quantity } = req.body;
-    
+
     try {
         const user = await User.query().findById(req.params.id).withGraphFetched("products");
         const product = await Product.query().findById(id);
@@ -99,11 +97,28 @@ users.post("/:id/cart", async (req, res) => {
 
         return res.status(200).json({ success: "Your product uploaded succesfully" });
     } catch (error) {
-        console.log(error instanceof UniqueViolationError); // true
 
         return res.status(400).json({errors: error.details});
     }
 });
+users.patch("/:id/cart/:product_id", async (req, res) => {
+    const { quantity } = req.body;
+    const { id, product_id } = req.params;
+    
+    try {
+        const user = await User.query().findById(id);
+        const product = await Product.query().findById(product_id);
+
+        await user.$relatedQuery("products").for([product.id, user.id]).patch({quantity});
+        
+        return res.status(200).json({ success: "Your product has been updated" });
+
+    } catch (error) {
+        console.log(error)
+        return res.status(400).json({error});
+        
+    }
+})
 
 
 module.exports = users;

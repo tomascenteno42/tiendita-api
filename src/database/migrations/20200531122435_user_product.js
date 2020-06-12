@@ -10,6 +10,9 @@ exports.up = function(knex) {
 
         table.foreign("user_id").references("id").inTable("users");        
         table.foreign("product_id").references("id").inTable("products");
+
+        table.unique(["user_id", "product_id"]);
+
         table.timestamps();
     })
 };

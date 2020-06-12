@@ -27,6 +27,7 @@ products.post("/", (req, res) =>{
 
 //SHOW
 products.get("/:productId", (req, res) => {
+    console.log(req.params.productId)
     Product.query().findById(req.params.productId)
         .then(product => {
             if(product) {
