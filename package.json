@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node src/index.js",
     "live": "nodemon src/index.js",
+    "db:migrate": "knex migrate:latest",
     "db:migrate:fresh": "knex migrate:rollback && knex migrate:latest"
   },
   "author": "",

@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt');
-const jwt = require("jsonwebtoken");
 
+const jwt = require("jsonwebtoken");
+const secret = "coquita";
 const express = require("express");
 
 const { Router } = express;
@@ -10,11 +11,14 @@ const users = Router();
 const User = require("../../database/models/User");
 const Product = require("../../database/models/Product");
 
+const authMiddleware = require("../middlewares/auth");
+
+//REGISTER
 users.post("/register", (req, res) =>{
-    
+
     const data = req.body;
     
-    let token = jwt.sign({ uid: data.id }, 'coquita');   
+    let token = jwt.sign({ uid: data.id }, secret);   
     
     data.password = bcrypt.hashSync(data.password, bcrypt.genSaltSync());
     
@@ -31,13 +35,13 @@ users.post("/register", (req, res) =>{
     })
     
 });
-
+//LOGIN
 users.post("/login", async (req,res) => {
     const { username, password } = req.body;
     try {
         const user = await User.query().where({ username }).first().throwIfNotFound();
         
-        let token = jwt.sign({ uid: user.id }, 'coquita');
+        let token = jwt.sign({ uid: user.id }, secret);
 
         const match = bcrypt.compareSync(password, user.password);
         
@@ -59,66 +63,19 @@ users.post("/login", async (req,res) => {
        
 });
 
-users.get("/me", async (req, res) => {
-
-    
+//ME
+users.get("/me", authMiddleware,  async (req, res) => {
     try {
-        
-        const userToken = req.headers.authorization.split(" ")[1];
-        const { uid } = jwt.verify(userToken, 'coquita');
-        const user = await User.query().findById(uid);
-        
+        const user = await User.query().findById(req.locals).skipUndefined();
         delete user.password;
+
         return res.status(200).json(user);   
     } catch (error) {
         return res.status(400).json({error: "The user cant be authenticated"});
     }
 })
 
-users.get("/:id/cart", async (req, res) => {
+
+
     
-    try {
-        const user = await User.query().findById(req.params.id).withGraphFetched("products");
-        return res.status(200).json(user.products);
-    } catch (error) {
-        return res.status(400).json({errors: "Something went wrong fetching your products"});
-    }
-});
-
-users.post("/:id/cart", async (req, res) => {
-    const { id, quantity } = req.body;
-
-    try {
-        const user = await User.query().findById(req.params.id).withGraphFetched("products");
-        const product = await Product.query().findById(id);
-
-        await user.$relatedQuery("products").relate({ id: product.id, quantity });        
-        
-
-        return res.status(200).json({ success: "Your product uploaded succesfully" });
-    } catch (error) {
-
-        return res.status(400).json({errors: error.details});
-    }
-});
-users.patch("/:id/cart/:product_id", async (req, res) => {
-    const { quantity } = req.body;
-    const { id, product_id } = req.params;
-    
-    try {
-        const user = await User.query().findById(id);
-        const product = await Product.query().findById(product_id);
-
-        await user.$relatedQuery("products").for([product.id, user.id]).patch({quantity});
-        
-        return res.status(200).json({ success: "Your product has been updated" });
-
-    } catch (error) {
-        console.log(error)
-        return res.status(400).json({error});
-        
-    }
-})
-
-
 module.exports = users;

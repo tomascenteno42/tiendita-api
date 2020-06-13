@@ -7,27 +7,39 @@ const { Router } = express;
 const products = Router();
 
 //RUTAS
-products.get("/", (req, res) => {
-    Product.query()
+
+//PRODUCTS
+products.get("/", async (req, res) => {
+    try {
+        Product.query()
         .then(products => {
             return res.status(200).json(products)
         });
-});
-
-products.post("/", (req, res) =>{
+    } catch (error) {
+        return res.status(400).json(error);
+    }
     
+});
+//CREATE
+products.post("/", async (req, res) =>{
     const data = req.body;
-    Product.query().insert({
-        name: data.name,
-        price: data.price
-    }).then(product => {
-        return res.status(200).json(product)
-    })
+
+    try {
+        Product.query().insert({
+            name: data.name,
+            price: data.price
+        }).then((product) => {
+            return res.status(200).json(product)
+        });
+
+    } catch (error) {
+        return res.status(400).json(error);
+    }
+   
 });
 
 //SHOW
 products.get("/:productId", (req, res) => {
-    console.log(req.params.productId)
     Product.query().findById(req.params.productId)
         .then(product => {
             if(product) {
@@ -48,6 +60,7 @@ products.delete("/:productId", (req, res) =>{
             return res.status(200).json({ success: `Se borro el producto con ID ${req.params.productId}`});
         })
 })
+//PATCH
 
 products.patch("/:productId", (req, res) =>{
     Product.query()

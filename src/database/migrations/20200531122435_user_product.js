@@ -8,8 +8,8 @@ exports.up = function(knex) {
 
         table.integer("quantity").defaultTo(1);
 
-        table.foreign("user_id").references("id").inTable("users");        
-        table.foreign("product_id").references("id").inTable("products");
+        table.foreign("user_id").references("id").inTable("users").onDelete("CASCADE");        
+        table.foreign("product_id").references("id").inTable("products").onDelete("CASCADE");
 
         table.unique(["user_id", "product_id"]);
 
