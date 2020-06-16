@@ -42,13 +42,14 @@ cart.patch("/:product_id", async (req, res) => {
     const { product_id } = req.params;
     try {
         const user = await User.query().findById(req.user);
-        const product = await Product.query().findById(product_id);
+        const product = await Product.query().findById(product_id).skipUndefined();
 
         await user.$relatedQuery("products").patch({quantity}).where("products.id", product.id);
 
         return res.status(200).json({ success: "Your product has been updated" });
 
     } catch (error) {
+        console.log(error);
         return res.status(400).json({error});
         
     }
