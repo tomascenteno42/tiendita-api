@@ -53,6 +53,20 @@ cart.patch("/:product_id", async (req, res) => {
         return res.status(400).json({error});
         
     }
-})
+});
+//delete product from cart
+cart.delete("/:product_id", async (req, res) => {
+    const { product_id } = req.params;
+    try {
+        const user = await User.query().findById(req.user).withGraphFetched("products");
+        const product = await Product.query().findById(product_id);
+
+        await user.$relatedQuery("products").unrelate().where("products.id", product.id);
+        return res.status(200).json({ success: "Your product has been erased from the galaxy"});
+    } catch (error) {
+        console.log(error);
+        return res.status(400).json({ error });
+    }
+});
 
 module.exports = cart;
