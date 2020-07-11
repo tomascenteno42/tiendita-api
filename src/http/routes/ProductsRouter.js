@@ -22,12 +22,12 @@ products.get("/", async (req, res) => {
 });
 //CREATE
 products.post("/", async (req, res) =>{
-    const data = req.body;
+    const { name, price } = req.body;
 
     try {
         Product.query().insert({
-            name: data.name,
-            price: data.price
+            name,
+            price 
         }).then((product) => {
             return res.status(200).json(product)
         });
@@ -39,38 +39,43 @@ products.post("/", async (req, res) =>{
 });
 
 //SHOW
-products.get("/:productId", (req, res) => {
-    Product.query().findById(req.params.productId)
+products.get("/:product_id", (req, res) => {
+    const { product_id } = req.params.product_id;
+    Product.query().findById(product_id)
         .then(product => {
             if(product) {
                 return res.status(200).json(product)
             } else {
-                return res.status(404).json({error: `No se a encontrado el producto con id ${req.params.productId}`});
+                return res.status(404).json({error: `No se a encontrado el producto con id ${req.params.product_id}`});
             }
         });
 });
 
 //DELETE
-products.delete("/:productId", (req, res) =>{
-    Product.query().deleteById(req.params.productId)
-        .then(productId =>{
-            if (productId === 0) {
-                return res.status(404).json({error: `No se a encontrado el producto con id ${req.params.productId}`});
+products.delete("/:product_id", (req, res) =>{
+    const { product_id } = req.params.product_id;
+
+    Product.query().deleteById(product_id)
+        .then(product_id =>{
+            if (product_id === 0) {
+                return res.status(404).json({error: `No se a encontrado el producto con id ${req.params.product_id}`});
             }
-            return res.status(200).json({ success: `Se borro el producto con ID ${req.params.productId}`});
+            return res.status(200).json({ success: `Se borro el producto con ID ${req.params.product_id}`});
         })
 })
 //PATCH
 
-products.patch("/:productId", (req, res) =>{
+products.patch("/:product_id", (req, res) =>{
+    const { name, price } = req.body;
+    const { product_id } = req.params.product_id;
     Product.query()
-        .patchAndFetchById(req.params.productId, {
-            name: req.body.name || undefined,
-            price: req.body.price || undefined
+        .patchAndFetchById(req.params.product_id, {
+            name: name || undefined,
+            price: price || undefined
         }).then(product => {
 
             if (!product) {
-                return res.status(404).json({error: `No se a encontrado el producto con id ${req.params.productId}`});
+                return res.status(404).json({error: `No se a encontrado el producto con id ${req.params.product_id}`});
             }
             
             return res.status(200).json(product);

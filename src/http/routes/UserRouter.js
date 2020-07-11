@@ -4,7 +4,6 @@ const { hashPassword, compareHashedPassword } = require("../../utils/hash");
 const { signUserToken } = require("../../utils/auth");
 
 const User = require("../../database/models/User");
-const Product = require("../../database/models/Product");
 
 const authMiddleware = require("../middlewares/auth");
 
