@@ -1,31 +1,29 @@
-const bcrypt = require('bcrypt');
-
-const jwt = require("jsonwebtoken");
-const secret = "coquita";
 const express = require("express");
 
-const { Router } = express;
-
-const users = Router();
+const { hashPassword, compareHashedPassword } = require("../../utils/hash");
+const { signUserToken } = require("../../utils/auth");
 
 const User = require("../../database/models/User");
 const Product = require("../../database/models/Product");
 
 const authMiddleware = require("../middlewares/auth");
 
-//REGISTER
+const { Router } = express;
+
+const users = Router();
+
 users.post("/register", (req, res) =>{
 
-    const data = req.body;
+    const { username, email, password, id }= req.body.data;
     
-    let token = jwt.sign({ uid: data.id }, secret);   
-    
-    data.password = bcrypt.hashSync(data.password, bcrypt.genSaltSync());
+    let token = signUserToken(id);
+
+    password = hashPassword(password);
     
     User.query().insert({
-        username: data.username,
-        email: data.email,
-        password: data.password
+        username,
+        email,
+        password
 
     }).then(user => {
         delete user.password;
@@ -35,16 +33,17 @@ users.post("/register", (req, res) =>{
     })
     
 });
-//LOGIN
+
 users.post("/login", async (req,res) => {
     const { username, password } = req.body;
+
     try {
         const user = await User.query().where({ username }).first().throwIfNotFound();
         
-        let token = jwt.sign({ uid: user.id }, secret);
+        let token = signUserToken(user.id);
 
-        const match = bcrypt.compareSync(password, user.password);
-        
+        const match = compareHashedPassword(password, user.password);
+
         delete user.password;
         
         if(match) {
@@ -63,10 +62,9 @@ users.post("/login", async (req,res) => {
        
 });
 
-//ME
 users.get("/me", authMiddleware,  async (req, res) => {
     try {
-        const user = await User.query().findById(req.locals).skipUndefined();
+        const user = await User.query().findById(req.user.id).skipUndefined();
         delete user.password;
 
         return res.status(200).json(user);   
@@ -75,7 +73,4 @@ users.get("/me", authMiddleware,  async (req, res) => {
     }
 })
 
-
-
-    
 module.exports = users;

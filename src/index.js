@@ -1,24 +1,18 @@
-// Dependecias nativas de NodeJS
 const path = require("path");
 
-// Dependencias (terceros)
 const express = require('express');
 const cors = require('cors');
 
 const { Router } = express;
 
-//BOOSTRAP
 const bootstrap = require("./database/setup");
  
-//http
 const products = require("./http/routes/ProductsRouter");
 const users = require("./http/routes/UserRouter");
 const cart = require("./http/routes/CartRouter");
 
-// MIDDLEWARES
 const authMiddleware = require("./http/middlewares/auth");
 
-// Express
 const port = 8080;
 const app = express();
 
