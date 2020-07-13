@@ -1,6 +1,6 @@
-const { Model } = require("objection");
+import { Model } from "objection";
 
-class BaseModel extends Model{
+export class BaseModel extends Model{
 
   $beforeInsert() {
 		this.created_at = this.formatDate();
@@ -21,5 +21,3 @@ class BaseModel extends Model{
 			.replace("T", " ");
 	}
 }
-
-module.exports = BaseModel;

@@ -1,7 +1,6 @@
-const knex = require("knex");
-const { Model } = require("objection");
+import knex from "knex";
+import { Model } from "objection";
 
-// My DataBase
 const db = knex({
     client: "mysql",
     connection: {
@@ -11,10 +10,10 @@ const db = knex({
         database: "tiendita"
     }
 });
-const bootstrap = (callback) => {
+
+export const bootstrap = (callback) => {
     Model.knex(db);    
     callback();
 };
 
-module.exports = bootstrap;
 

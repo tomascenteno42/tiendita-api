@@ -4,8 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node src/index.js",
-    "live": "nodemon src/index.js",
+    "live": "nodemon --exec babel-node src/index.js",
     "db:migrate": "knex migrate:latest",
     "db:migrate:fresh": "knex migrate:rollback && knex migrate:latest"
   },
@@ -13,6 +12,7 @@
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^5.0.0",
+    "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
@@ -24,6 +24,12 @@
     "objection-db-errors": "^1.1.2"
   },
   "devDependencies": {
-    "@types/bcrypt": "^3.0.0"
+    "@babel/core": "^7.10.4",
+    "@babel/node": "^7.10.4",
+    "@babel/preset-env": "^7.10.4",
+    "@types/bcrypt": "^3.0.0",
+    "babel-cli": "^6.26.0",
+    "babel-plugin-module-resolver": "^4.0.0",
+    "babel-preset-env": "^1.7.0"
   }
 }

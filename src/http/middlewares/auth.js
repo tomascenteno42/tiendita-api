@@ -1,7 +1,8 @@
-const { verifyUserToken } = require("../../utils/auth");
-const User = require("../../database/models/User");
+import { User } from "../../database/models/User";
 
-const authMiddleware = async (req, res, next) => {
+import { verifyUserToken } from "../../core/utils/auth";
+
+export const authMiddleware = async (req, res, next) => {
     try {
         const userToken = req.headers.authorization.split(" ")[1];
         const { uid } = verifyUserToken(userToken);
@@ -19,4 +20,3 @@ const authMiddleware = async (req, res, next) => {
     }
 }
 
-module.exports = authMiddleware;

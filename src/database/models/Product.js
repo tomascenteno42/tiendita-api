@@ -1,15 +1,13 @@
-const BaseModel = require("./BaseModel");
+import { BaseModel } from "./BaseModel";
 
-const User = require("./User");
-
-class Product extends BaseModel {
+export class Product extends BaseModel {
     static get tableName() {
         return "products";
     }
 
     static get relationMappings() {
 
-        const User = require("./User");
+        const { User }= require("./User");
 
         return {
             users: {
@@ -28,6 +26,3 @@ class Product extends BaseModel {
         }
     }
 }
-
-//exportamos Product
-module.exports = Product;

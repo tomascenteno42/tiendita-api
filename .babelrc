@@ -1,0 +1,15 @@
+{
+    "presets": [
+        "@babel/preset-env"
+    ],
+    "plugins": [
+        ["module-resolver", {
+          "alias": {
+            "@controllers": "./src/core/controllers/",
+            "@utils": "./src/core/utils/",
+            "@models": "./src/database/models/",
+            "@http": "./src/http/"
+          }
+        }]
+      ]
+}
